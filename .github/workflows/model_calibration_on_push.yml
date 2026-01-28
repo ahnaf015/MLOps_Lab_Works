@@ -19,7 +19,7 @@ jobs:
         python-version: 3.9
 
     - name: Install dependencies
-      run: pip install -r Labs/Github_Labs/Lab2/requirements.txt
+      run: pip install -r Github_Labs/Lab2/requirements.txt
 
     - name: Generate and Store Timestamp
       run: |
@@ -28,23 +28,23 @@ jobs:
 
     - name: Retrain Model
       run: |
-        python Labs/Github_Labs/Lab2/src/train_model.py --timestamp "$timestamp"
+        python Github_Labs/Lab2/src/train_model.py --timestamp "$timestamp"
 
     - name: Evaluate Model and Log Metrics
       run: |
-        python Labs/Github_Labs/Lab2/src/evaluate_model.py --timestamp "$timestamp"
-        test -f "Labs/Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
+        python Github_Labs/Lab2/src/evaluate_model.py --timestamp "$timestamp"
+        test -f "Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
 
     - name: Verify Model Saved
       run: |
-        test -f "Labs/Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
+        test -f "Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
 
     - name: Commit and Push Changes
       run: |
         git config --global user.email "ahnaf015@users.noreply.github.com"
         git config --global user.name "ahnaf015"
-        metrics_file="Labs/Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
-        model_file="Labs/Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
+        metrics_file="Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
+        model_file="Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
         git add -f "$metrics_file" "$model_file"
         if ! git diff --cached --quiet; then
           git commit -m "Add metrics and updated model for $timestamp"
