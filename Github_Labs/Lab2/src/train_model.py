@@ -24,7 +24,7 @@ MODELS_DIR = os.path.join(LAB2_DIR, "models")
 
 
 def to_file_uri(path: str) -> str:
-    # Convert Windows path to file URI that MLflow understands
+    # Converting Windows path to file URI that MLflow understands
     return "file:///" + os.path.abspath(path).replace("\\", "/")
 
 
