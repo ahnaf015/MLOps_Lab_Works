@@ -3,10 +3,7 @@ name: Model Retraining on Push to Main - Github Lab 2
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
-
-permissions:
-  contents: write
+      - main
 
 jobs:
   retrain:
@@ -22,46 +19,33 @@ jobs:
         python-version: 3.9
 
     - name: Install dependencies
-      run: pip install -r Github_Labs/Lab2/requirements.txt
+      run: pip install -r Labs/Github_Labs/Lab2/requirements.txt
 
     - name: Generate and Store Timestamp
-      id: timestamp
       run: |
         timestamp=$(date '+%Y%m%d%H%M%S')
-        echo "$timestamp" > timestamp.txt
         echo "timestamp=$timestamp" >> $GITHUB_ENV
-
-    - name: Check File Permissions
-      run: ls -l Github_Labs/Lab2/src/train_model.py
-
-    - name: Set File Permissions
-      run: chmod +x Github_Labs/Lab2/src/train_model.py
 
     - name: Retrain Model
       run: |
-        python Github_Labs/Lab2/src/train_model.py --timestamp "$timestamp"
+        python Labs/Github_Labs/Lab2/src/train_model.py --timestamp "$timestamp"
 
     - name: Evaluate Model and Log Metrics
       run: |
-        python Github_Labs/Lab2/src/evaluate_model.py --timestamp "$timestamp"
-        metrics_filename="${timestamp}_metrics.json"
-        mkdir -p Github_Labs/Lab2/metrics
-        mv "$metrics_filename" "Github_Labs/Lab2/metrics/$metrics_filename"
+        python Labs/Github_Labs/Lab2/src/evaluate_model.py --timestamp "$timestamp"
+        test -f "Labs/Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
 
-    - name: Store and Version the New Model
+    - name: Verify Model Saved
       run: |
-        model_filename="model_${timestamp}_dt_model.joblib"
-        mkdir -p Github_Labs/Lab2/models
-        mv "$model_filename" "Github_Labs/Lab2/models/$model_filename"
+        test -f "Labs/Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
 
     - name: Commit and Push Changes
       run: |
-        git config --global user.email "26876927+raminmohammadi@users.noreply.github.com"
-        git config --global user.name "raminmohammadi"
-        metrics_filename="Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
-        model_filename="Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
-        git add -f "$metrics_filename" "$model_filename"
-        # Commit only if there are changes
+        git config --global user.email "ahnaf015@users.noreply.github.com"
+        git config --global user.name "ahnaf015"
+        metrics_file="Labs/Github_Labs/Lab2/metrics/${timestamp}_metrics.json"
+        model_file="Labs/Github_Labs/Lab2/models/model_${timestamp}_dt_model.joblib"
+        git add -f "$metrics_file" "$model_file"
         if ! git diff --cached --quiet; then
           git commit -m "Add metrics and updated model for $timestamp"
           git push

@@ -1,49 +1,55 @@
-import pickle, os, json, random
-from sklearn.metrics import f1_score
-import joblib, glob, sys
+import os
+import json
 import argparse
-from sklearn.datasets import make_classification
+import joblib
 
-sys.path.insert(0, os.path.abspath('..'))
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score, accuracy_score
 
-if __name__=='__main__':
+
+SRC_DIR = os.path.abspath(os.path.dirname(__file__))
+LAB2_DIR = os.path.abspath(os.path.join(SRC_DIR, ".."))
+
+MODELS_DIR = os.path.join(LAB2_DIR, "models")
+METRICS_DIR = os.path.join(LAB2_DIR, "metrics")
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--timestamp", type=str, required=True, help="Timestamp from GitHub Actions")
     args = parser.parse_args()
-    
-    # Access the timestamp
-    timestamp = args.timestamp
-    try:
-        model_version = f'model_{timestamp}_dt_model'  # Use a timestamp as the version
-        model = joblib.load(f'{model_version}.joblib')
-    except:
-        raise ValueError('Failed to catching the latest model')
-        
-    try:
-        # Check if the file exists within the folder
-        X, y = make_classification(
-                            n_samples=random.randint(0, 2000),
-                            n_features=6,
-                            n_informative=3,
-                            n_redundant=0,
-                            n_repeated=0,
-                            n_classes=2,
-                            random_state=0,
-                            shuffle=True,
-                        )
-    except:
-        raise ValueError('Failed to catching the data')
-    
-    y_predict = model.predict(X)
-    metrics = {"F1_Score":f1_score(y, y_predict)}
-    
-    # Save metrics to a JSON file
 
-    if not os.path.exists('metrics/'): 
-        # then create it.
-        os.makedirs("metrics/")
-        
-    with open(f'{timestamp}_metrics.json', 'w') as metrics_file:
-        json.dump(metrics, metrics_file, indent=4)
-               
-    
+    timestamp = args.timestamp
+
+    model_path = os.path.join(MODELS_DIR, f"model_{timestamp}_dt_model.joblib")
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model not found: {model_path}")
+
+    model = joblib.load(model_path)
+
+    data = load_breast_cancer()
+    X, y = data.data, data.target
+
+    # Same split logic as training
+    X_train, X_temp, y_train, y_temp = train_test_split(
+        X, y, test_size=0.30, random_state=0, stratify=y
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_temp, y_temp, test_size=0.50, random_state=0, stratify=y_temp
+    )
+
+    y_pred = model.predict(X_test)
+
+    metrics = {
+        "Accuracy": float(accuracy_score(y_test, y_pred)),
+        "F1_Score": float(f1_score(y_test, y_pred)),
+    }
+
+    os.makedirs(METRICS_DIR, exist_ok=True)
+    metrics_path = os.path.join(METRICS_DIR, f"{timestamp}_metrics.json")
+
+    with open(metrics_path, "w") as f:
+        json.dump(metrics, f, indent=4)
+
+    print(f"Saved metrics to {metrics_path}")
