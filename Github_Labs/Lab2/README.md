@@ -1,101 +1,145 @@
-# Using GitHub Actions for Model Training and Versioning
+# LAB 1 - GitHub (Lab2): Automated Model Training & Calibration with GitHub Actions and MLflow
 
-This repository demonstrates how to use GitHub Actions to automate the process of training a machine learning model, storing the model, and versioning it. This allows you to easily update and improve your model in a collaborative environment.
-
-Watch the tutorial video for this lab at [Github action Lab2](https://youtu.be/cj5sXIMZUjQ)
-
-
-## Prerequisites
-
-- [GitHub](https://github.com) account
-- Basic knowledge of Python and machine learning
-- Git command-line tool (optional)
-
-## Getting Started
-
-1. **Fork this Repository**: Click the "Fork" button at the top right of this [repository](https://github.com/raminmohammadi/MLOps/) to create your own copy.
-3. **Clone Your Repository**:
-   ```bash
-   git clone https://github.com/your-username/your-forked-repo.git
-   cd your-forked-repo
-
-   ```
-4. GitHub account
-5. Basic knowledge of Python and machine learning
-6. Git command-line tool (optional)
-
-# Running the Workflow
-## Customize Model Training
-1. Modify the `train_model.py` script in the `src/` directory according to your dataset and model requirements. This script generates synthetic data for demonstration purposes.
-
-## Push Your Changes:
-1. Commit your changes and push them to your forked repository.
-
-## GitHub Actions Workflow:
-1. Once you push changes to the main branch, the GitHub Actions workflow will be triggered automatically.
-
-## View Workflow Progress:
-1. You can track the progress of the workflow by going to the "Actions" tab in your GitHub repository.
-
-## Retrieve the Trained Model:
-1. After the workflow completes successfully, the trained model will be stored in the `models/` directory.
-
-# Model Evaluation
-The model evaluation is performed automatically within the GitHub Actions workflow. The evaluation results (e.g., F1 Score) are stored in the `metrics/` directory.
-
-# Versioning the Model
-Each time you run the workflow, a new version of the model is created and stored. You can access and use these models for your projects.
-
-# GitHub Actions Workflow Details
-The workflow consists of the following steps:
-
-- Generate and Store Timestamp: A timestamp is generated and stored in a file for versioning.
-- Model Training: The `train_model.py` script is executed, which trains a random forest classifier on synthetic data and stores the model in the `models/` directory.
-- Model Evaluation: The `evaluate_model.py` script is executed to evaluate the model's F1 Score on synthetic data, and the results are stored in the `metrics/` directory.
-- Store and Version the New Model: The trained model is moved to the `models/` directory with a timestamp-based version.
-- Commit and Push Changes: The metrics and updated model are committed to the repository, allowing you to track changes.
-
-# Model Calibration Workflow
 ## Overview
-The `model_calibration_on_push.yml` workflow is a part of the automation process for machine learning model calibration within this repository. It is essential for ensuring that the model's predictions are accurate and well-calibrated, a critical step in machine learning applications.
 
-## Workflow Purpose
-This workflow's primary purpose is to calibrate a trained machine learning model after each push to the main branch of the repository. Calibration is a crucial step to align model predictions with reality, particularly when dealing with classification tasks. In simple terms, calibration ensures that a model's predicted probabilities match the actual likelihood of an event happening.
+This lab demonstrates an end-to-end MLOps workflow using **GitHub Actions** for CI/CD automation and **MLflow** for experiment tracking. The project trains and evaluates machine learning models on two datasets — **Breast Cancer Wisconsin** (automated pipeline) and **Wine Quality** (notebook-based experimentation) — with automated retraining triggered on push events and scheduled daily calibration.
 
-## Workflow Execution
-Let's break down how this workflow operates step by step:
+---
 
-### Step 1: Trigger on Push to Main Branch
-- This workflow is automatically initiated when changes are pushed to the main branch of the repository. It ensures that the model remains calibrated and up-to-date with the latest data and adjustments.
+## Project Structure
 
-### Step 2: Prepare Environment
-- The workflow begins by setting up a Python environment and installing the necessary Python libraries and dependencies. This is crucial to ensure that the model calibration process can be executed without any issues.
+```
+Github_Labs/Lab2/
+├── metrics/                  # Stored evaluation metrics (JSON)
+├── mlruns/                   # MLflow experiment tracking artifacts
+├── models/                   # Saved trained model files (.joblib)
+├── src/
+│   ├── data/                 # Cached dataset pickle files
+│   ├── metrics/              # Source-level metrics
+│   ├── mlruns/               # Source-level MLflow runs
+│   ├── __init__.py
+│   ├── evaluate_model.py     # Model evaluation script
+│   ├── test.ipynb            # Wine Quality experiment notebook
+│   └── train_model.py        # Breast Cancer training pipeline
+├── test/
+│   └── __init__.py
+├── workflows/
+│   ├── model_calibration.yml            # Scheduled daily retraining
+│   └── model_calibration_on_push.yml    # Retraining on push to main
+├── README.md
+└── requirements.txt
+```
 
-### Step 3: Load Trained Model
-- The trained machine learning model, which has been previously saved in the `models/` directory, is loaded into memory. This model should be the most recent version, as trained by the `train_model.py` script.
+---
 
-### Step 4: Calibrate Model Probabilities
-- In this step, the model's predicted probabilities are calibrated. Calibration methods, such as Platt scaling or isotonic regression, are applied. These methods adjust the model's predicted probabilities to match the actual likelihood of an event occurring. This calibration step is critical for reliable decision-making based on the model's predictions.
+## Datasets & Models
 
-### Step 5: Save Calibrated Model
-- The calibrated model is saved back to the `models/` directory. It is given a distinct identifier to differentiate it from the original, uncalibrated models. This ensures that both the original model and the calibrated model are available for comparison and use.
+### 1. Breast Cancer Wisconsin (Automated Pipeline)
+- **Script:** `src/train_model.py`
+- **Model:** Logistic Regression with StandardScaler (Pipeline)
+- **Split:** 70% Train / 15% Validation / 15% Test
+- **Threshold Tuning:** F1-optimized threshold search on the validation set
+- **Metrics Logged:** Validation F1, Test Accuracy, Test F1
 
-### Step 6: Commit and Push Changes
-- This final step involves committing the calibrated model and any other relevant files to the repository. It is essential to keep track of the changes made during the calibration process and to store the calibrated model in the repository for future applications and reference.
+### 2. Wine Quality Classification (Notebook)
+- **Notebook:** `src/test.ipynb`
+- **Model:** Gradient Boosting Classifier
+- **Split:** 70% Train / 30% Test
+- **Performance:** ~96.3% Accuracy, ~96.5% F1 (Macro)
+- **Metrics Logged:** Accuracy, F1 Score (Macro & Weighted)
 
-# Customization
-The `model_calibration_on_push.yml` workflow can be customized to align with your specific project requirements. You can modify calibration methods, the directory where the calibrated model is saved, or any other aspects of the calibration process to meet your project's unique needs.
+---
 
-# Integration with Model Training
-This workflow is designed to work seamlessly with the main model training workflow, `model_retraining_on_push.yml`. In the initial workflow, the model is trained, and in this workflow, the calibrated model is generated. The calibrated model can then be used in applications where precise, well-calibrated probabilities are essential.
+## GitHub Actions Workflows
 
-# License
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Retraining on Push (`model_calibration_on_push.yml`)
+Triggers automatically on every push to the `main` branch. Steps:
+1. Checkout repository
+2. Set up Python 3.9 and install dependencies
+3. Generate a unique timestamp
+4. Retrain the model using `train_model.py`
+5. Evaluate the model using `evaluate_model.py`
+6. Verify model and metrics artifacts exist
+7. Commit and push updated model + metrics back to `main`
 
-# Acknowledgments
-- This project uses GitHub Actions for continuous integration and deployment.
-- Model training and evaluation are powered by Python and scikit-learn.
+### Scheduled Daily Calibration (`model_calibration.yml`)
+Runs on a daily cron schedule (`0 0 * * *`) and can also be triggered manually via `workflow_dispatch`. Follows the same pipeline as above to ensure the model stays calibrated.
 
-# Questions or Issues
-If you have any questions or encounter issues while using this GitHub Actions workflow, please open an issue in the Issues section of your repository.
+---
 
+## MLflow Experiment Tracking
+
+Both scripts log experiments to MLflow with the following tracked information:
+- **Parameters:** Dataset name, sample count, feature count, model type, split sizes, hyperparameters
+- **Metrics:** Accuracy, F1 Score, threshold-tuned metrics
+- **Artifacts:** Trained model files (`.joblib`)
+
+### Viewing MLflow UI
+```bash
+# From the src/ directory:
+python -m mlflow ui --backend-store-uri ./mlruns
+
+# Or from Lab2/ directory:
+python -m mlflow ui --backend-store-uri ./src/mlruns
+```
+Then navigate to **http://localhost:5000**
+
+---
+
+## Setup & Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ahnaf015/MLOps_lab_works.git
+cd MLOps_lab_works/Github_Labs/Lab2
+```
+
+### 2. Create Virtual Environment
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Linux/Mac
+# .venv\Scripts\activate         # Windows
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+**Dependencies:**
+- scikit-learn
+- numpy
+- pandas
+- pytest
+- ipykernel
+- mlflow
+
+---
+
+## Usage
+
+### Run Training Manually
+```bash
+python src/train_model.py --timestamp "$(date '+%Y%m%d%H%M%S')"
+```
+
+### Run the Wine Quality Notebook
+```bash
+jupyter notebook src/test.ipynb
+```
+
+---
+
+## Key Features
+
+- **Automated CI/CD Pipeline** — Model retraining triggered on every push to `main`
+- **Scheduled Retraining** — Daily cron job for periodic model calibration
+- **Experiment Tracking** — Full MLflow integration for parameters, metrics, and artifacts
+- **Threshold Optimization** — F1-score-based threshold tuning on validation data
+- **Artifact Versioning** — Timestamped model files committed back to the repository
+
+---
+
+## License
+
+This project is licensed under the terms of the [MIT License](../../LICENSE).
