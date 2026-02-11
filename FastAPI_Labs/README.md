@@ -262,11 +262,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 👨‍💻 Author
-
-**Mohammed Ahnaf Tajwar**
-- Master's in AI @ Northeastern University
-- [LinkedIn](https://www.linkedin.com/in/mohammed-ahnaf-tajwar/) • [GitHub](https://github.com/ahnaf015)
-
----
-
