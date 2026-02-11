@@ -1,4 +1,4 @@
-# 🍷 Wine Quality Prediction System
+# Lab 2 - FastAPI Lab - Wine Quality Prediction System
 
 A full-stack machine learning application that predicts wine quality based on physicochemical properties using FastAPI, Streamlit, and scikit-learn.
 
