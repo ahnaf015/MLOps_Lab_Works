@@ -1,0 +1,25 @@
+# Airflow generated folders
+logs/
+working_data/
+
+# Local env / secrets
+.env
+*.env
+
+# Model artifacts
+model/
+*.sav
+*.pkl
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# WSL / Docker noise
+*.log
