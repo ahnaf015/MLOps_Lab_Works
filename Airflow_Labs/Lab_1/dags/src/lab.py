@@ -5,7 +5,6 @@ import pickle
 import os
 import base64
 
-# Mall dataset feature columns (3 numeric columns)
 FEATURE_COLS = ["Age", "Annual Income (k$)", "Spending Score (1-100)"]
 
 def load_data():
@@ -16,8 +15,8 @@ def load_data():
     """
     print("We are here")
     df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../data/file.csv"))
-    serialized_data = pickle.dumps(df)                         # bytes
-    return base64.b64encode(serialized_data).decode("ascii")   # JSON-safe string
+    serialized_data = pickle.dumps(df)                         
+    return base64.b64encode(serialized_data).decode("ascii")   
 
 
 def data_preprocessing(data_b64: str):
@@ -34,13 +33,11 @@ def data_preprocessing(data_b64: str):
 
     df = df.dropna()
 
-    # Select Mall dataset columns
     clustering_data = df[FEATURE_COLS]
 
     min_max_scaler = MinMaxScaler()
     clustering_data_minmax = min_max_scaler.fit_transform(clustering_data)
 
-    # Store both (data, scaler) so downstream tasks can scale test.csv consistently
     payload = (clustering_data_minmax, min_max_scaler)
 
     clustering_serialized_data = pickle.dumps(payload)
@@ -65,7 +62,6 @@ def build_save_model(data_b64: str, filename: str):
     best_bic = None
     best_k = None
 
-    # Try k=1..10 (faster than 1..49, and enough for Mall dataset)
     for k in range(1, 11):
         gmm = GaussianMixture(
             n_components=k,
@@ -101,7 +97,7 @@ def build_save_model(data_b64: str, filename: str):
             f
         )
 
-    return bics  # list is JSON-safe
+    return bics  
 
 
 def load_model_elbow(filename: str, bic_values: list):

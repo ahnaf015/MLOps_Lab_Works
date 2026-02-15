@@ -14,7 +14,7 @@ with DAG(
     dag_id="Airflow_Lab1",
     default_args=default_args,
     description="Dag example for Lab 1 of Airflow series",
-    schedule_interval=None,   # manual trigger (Airflow 2.5 style)
+    schedule_interval=None,   
     catchup=False,
 ) as dag:
     load_data_task = PythonOperator(
