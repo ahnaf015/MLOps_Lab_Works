@@ -117,12 +117,12 @@ Age,Annual Income (k$),Spending Score (1-100)
 
 **Mac/Linux**
 ```bash
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.9.2/docker-compose.yaml'
+curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.5.1/docker-compose.yaml'
 ```
 
 **Windows (PowerShell)**
 ```powershell
-curl -o docker-compose.yaml https://airflow.apache.org/docs/apache-airflow/2.9.2/docker-compose.yaml
+curl -o docker-compose.yaml https://airflow.apache.org/docs/apache-airflow/2.5.1/docker-compose.yaml
 ```
 
 ### 2) Create required directories
