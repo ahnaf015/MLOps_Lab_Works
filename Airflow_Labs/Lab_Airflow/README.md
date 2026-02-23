@@ -281,34 +281,6 @@ docker-compose down -v
 
 ---
 
-## Screenshots
-
-### DAG Graph View
-![DAG Graph](screenshots/01_dag_graph.png)
-
-### Pipeline Running
-![Pipeline Running](screenshots/02_dag_running.png)
-
-### Pipeline Complete — All Tasks Green
-![Pipeline Success](screenshots/03_dag_success.png)
-
-### Flask Dashboard
-![Dashboard Main](screenshots/04_dashboard_main.png)
-
-### Confusion Matrix + ROC Curve
-![Confusion Matrix](screenshots/05_confusion_matrix.png)
-
-### Clustering Dendrogram + PCA Scatter
-![Dendrogram](screenshots/06_dendrogram.png)
-
-### Feature Importance
-![Feature Importance](screenshots/07_feature_importance.png)
-
-### Raw Metrics JSON (`/metrics`)
-![Metrics JSON](screenshots/08_metrics_json.png)
-
----
-
 ## Author
 
 **Mohammed Ahnaf Tajwar**
