@@ -6,6 +6,26 @@ This lab is a combination of concepts from previous labs — where Lab 1 focused
 
 ---
 
+## Preview
+
+| DAG Graph | Pipeline Success |
+|---|---|
+| ![DAG Graph](screenshots/01_dag_graph.png) | ![Pipeline Success](screenshots/03_dag_success.png) |
+
+| Flask Dashboard | Metrics JSON |
+|---|---|
+| ![Dashboard](screenshots/04_dashboard_main.png) | ![Metrics JSON](screenshots/08_metrics_json.png) |
+
+| Confusion Matrix + ROC | Dendrogram + PCA |
+|---|---|
+| ![Confusion Matrix](screenshots/05_confusion_matrix.png) | ![Dendrogram](screenshots/06_dendrogram.png) |
+
+| Feature Importance |
+|---|
+| ![Feature Importance](screenshots/07_feature_importance.png) |
+
+---
+
 ## What This Lab Does
 
 ### Machine Learning Pipeline
