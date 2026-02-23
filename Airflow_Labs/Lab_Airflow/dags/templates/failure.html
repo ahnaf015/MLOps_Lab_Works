@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Air Quality Pipeline — Failed</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container { max-width: 560px; width: 100%; text-align: center; }
+    .icon { font-size: 5rem; margin-bottom: 1rem; }
+    h1   { font-size: 2rem; font-weight: 700; color: #fc8181; margin-bottom: .5rem; }
+    p.sub { color: #718096; margin-bottom: 2rem; font-size: .95rem; }
+    .card {
+      background: #1a1f2e;
+      border: 1px solid #742a2a;
+      border-radius: .75rem;
+      padding: 1.5rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .error-box {
+      background: #1a1f2e;
+      border: 1px solid #9b2c2c;
+      border-radius: .5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      color: #fc8181;
+      font-size: .85rem;
+    }
+    .meta-row { display: flex; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid #1e2535; font-size: .85rem; }
+    .meta-row:last-child { border-bottom: none; }
+    .meta-row .key   { color: #718096; }
+    .meta-row .value { color: #e2e8f0; text-align: right; }
+    .btn {
+      display: inline-block;
+      padding: .65rem 1.5rem;
+      border-radius: .5rem;
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity .2s;
+      margin: .3rem;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-red  { background: #742a2a; color: #fc8181; border: 1px solid #9b2c2c; }
+    .btn-blue { background: #2b6cb0; color: #bee3f8; border: 1px solid #3182ce; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="icon">❌</div>
+  <h1>Pipeline Failed</h1>
+  <p class="sub">The Air Quality Pipeline encountered an error.</p>
+
+  {% if error %}
+  <div class="error-box">{{ error }}</div>
+  {% endif %}
+
+  {% if run %}
+  <div class="card">
+    <div class="meta-row"><span class="key">Run ID</span><span class="value">{{ run.get('dag_run_id', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">State</span><span class="value">{{ run.get('state', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">Start</span><span class="value">{{ run.get('start_date', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">End</span><span class="value">{{ run.get('end_date', '—') }}</span></div>
+  </div>
+  {% endif %}
+
+  <div>
+    <a href="http://localhost:8082" target="_blank" class="btn btn-blue">Open Airflow UI to Debug</a>
+    <a href="https://github.com/ahnaf015/MLOps_Lab_Works/issues" target="_blank" class="btn btn-red">Report Issue</a>
+  </div>
+
+</div>
+</body>
+</html>

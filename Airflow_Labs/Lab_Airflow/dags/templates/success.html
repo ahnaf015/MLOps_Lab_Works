@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if status == 'in_progress' %}
+  <meta http-equiv="refresh" content="15" />
+  {% endif %}
+  <title>Air Quality Pipeline — {% if status == 'success' %}Success{% else %}In Progress{% endif %}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+    }
+    .icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      animation: pop .4s ease;
+    }
+    @keyframes pop {
+      0%   { transform: scale(.5); opacity: 0; }
+      80%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      color: {% if status == 'success' %}#68d391{% else %}#63b3ed{% endif %};
+    }
+    p.sub {
+      color: #718096;
+      margin-bottom: 2rem;
+      font-size: .95rem;
+    }
+    .card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: .75rem;
+      padding: 1.5rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .meta-row { display: flex; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid #1e2535; font-size: .85rem; }
+    .meta-row:last-child { border-bottom: none; }
+    .meta-row .key   { color: #718096; }
+    .meta-row .value { color: #e2e8f0; text-align: right; }
+    .btn {
+      display: inline-block;
+      padding: .65rem 1.5rem;
+      border-radius: .5rem;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s;
+      margin: .3rem;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-green { background: #276749; color: #68d391; border: 1px solid #2f855a; }
+    .btn-blue  { background: #2b6cb0; color: #bee3f8; border: 1px solid #3182ce; }
+    .spinner {
+      display: inline-block;
+      width: 1rem; height: 1rem;
+      border: 2px solid #4a5568;
+      border-top-color: #63b3ed;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: .4rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  {% if status == 'success' %}
+    <div class="icon">✅</div>
+    <h1>Pipeline Complete!</h1>
+    <p class="sub">Air Quality Pipeline finished successfully.</p>
+  {% else %}
+    <div class="icon">⏳</div>
+    <h1>Pipeline Running…</h1>
+    <p class="sub"><span class="spinner"></span>Refreshing every 15 seconds — please wait.</p>
+  {% endif %}
+
+  {% if run %}
+  <div class="card">
+    <div class="meta-row"><span class="key">Run ID</span><span class="value">{{ run.get('dag_run_id', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">State</span><span class="value">{{ run.get('state', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">Start</span><span class="value">{{ run.get('start_date', 'N/A') }}</span></div>
+    <div class="meta-row"><span class="key">End</span><span class="value">{{ run.get('end_date', '—') }}</span></div>
+  </div>
+  {% endif %}
+
+  <div>
+    <a href="/dashboard" class="btn btn-green">View Full Dashboard</a>
+    <a href="http://localhost:8082" target="_blank" class="btn btn-blue">Open Airflow UI</a>
+  </div>
+
+</div>
+</body>
+</html>

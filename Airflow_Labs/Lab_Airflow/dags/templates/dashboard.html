@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="30" />
+  <title>Air Quality Pipeline — Dashboard</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a1f2e 0%, #0f172a 100%);
+      border-bottom: 1px solid #2d3748;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.4rem; font-weight: 700; color: #63b3ed; }
+    header h1 span { color: #68d391; }
+    .badge {
+      padding: .3rem .8rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+      background: #22543d;
+      color: #68d391;
+      border: 1px solid #276749;
+    }
+    .badge.running { background: #2a4365; color: #63b3ed; border-color: #2b6cb0; }
+    .badge.failed  { background: #742a2a; color: #fc8181; border-color: #9b2c2c; }
+    .badge.unknown { background: #2d3748; color: #a0aec0; border-color: #4a5568; }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #a0aec0;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 1rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    /* ── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: .75rem;
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* ── Run Meta ─────────────────────────────────────────────────── */
+    .run-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .meta-item label { font-size: .7rem; color: #718096; text-transform: uppercase; letter-spacing:.06em; }
+    .meta-item p     { font-size: .9rem; color: #e2e8f0; margin-top:.25rem; word-break: break-all; }
+
+    /* ── Metric Cards ─────────────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: .75rem;
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color .2s;
+    }
+    .metric-card:hover { border-color: #4a5568; }
+    .metric-card .label { font-size: .7rem; color: #718096; text-transform: uppercase; letter-spacing:.06em; }
+    .metric-card .value { font-size: 2rem; font-weight: 700; margin: .4rem 0; color: #63b3ed; }
+    .metric-card .sub   { font-size: .75rem; color: #4a5568; }
+
+    /* ── Model Comparison ─────────────────────────────────────────── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    .compare-table th {
+      text-align: left;
+      padding: .6rem 1rem;
+      font-size: .75rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1px solid #2d3748;
+    }
+    .compare-table td {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid #1e2535;
+      font-size: .9rem;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .winner { color: #68d391; font-weight: 700; }
+    .best-tag {
+      display: inline-block;
+      background: #22543d;
+      color: #68d391;
+      border-radius: .3rem;
+      padding: .1rem .5rem;
+      font-size: .7rem;
+      margin-left: .4rem;
+    }
+
+    /* ── Clustering Card ──────────────────────────────────────────── */
+    .cluster-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .cluster-stat { text-align: center; }
+    .cluster-stat .cv { font-size: 1.6rem; font-weight: 700; color: #b794f4; }
+    .cluster-stat .cl { font-size: .7rem; color: #718096; text-transform: uppercase; }
+
+    /* ── Plots ────────────────────────────────────────────────────── */
+    .plots-section { margin-bottom: 2rem; }
+    .plots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+    .plot-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: .75rem;
+      overflow: hidden;
+    }
+    .plot-card .plot-title {
+      padding: .75rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: #a0aec0;
+      border-bottom: 1px solid #2d3748;
+      background: #141824;
+    }
+    .plot-card img {
+      width: 100%;
+      display: block;
+      background: #fff;
+    }
+    .plot-card .no-plot {
+      padding: 2rem;
+      text-align: center;
+      color: #4a5568;
+      font-size: .85rem;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #4a5568;
+      font-size: .75rem;
+      border-top: 1px solid #2d3748;
+      margin-top: 2rem;
+    }
+    .refresh-note { color: #4a5568; font-size: .75rem; }
+    a { color: #63b3ed; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
+<header>
+  <h1>Air Quality Pipeline &nbsp;<span>Dashboard</span></h1>
+  {% if run %}
+    {% set state = run.get('state', 'unknown') %}
+    <span class="badge {% if state == 'running' or state == 'queued' %}running{% elif state == 'failed' %}failed{% elif state != 'success' %}unknown{% endif %}">
+      {{ state | upper }}
+    </span>
+  {% else %}
+    <span class="badge unknown">NO RUN DATA</span>
+  {% endif %}
+</header>
+
+<main>
+
+  <!-- ── DAG Run Metadata ───────────────────────────────────────────────── -->
+  <p class="section-title">DAG Run Info</p>
+  <div class="run-meta card" style="margin-bottom:2rem;">
+    {% if run %}
+      <div class="meta-item"><label>Run ID</label><p>{{ run.get('dag_run_id', 'N/A') }}</p></div>
+      <div class="meta-item"><label>State</label><p>{{ run.get('state', 'N/A') }}</p></div>
+      <div class="meta-item"><label>Start</label><p>{{ run.get('start_date', 'N/A') }}</p></div>
+      <div class="meta-item"><label>End</label><p>{{ run.get('end_date', 'N/A') }}</p></div>
+      <div class="meta-item"><label>Logical Date</label><p>{{ run.get('logical_date', 'N/A') }}</p></div>
+    {% else %}
+      <div class="meta-item"><label>Status</label><p>No run data available</p></div>
+    {% endif %}
+  </div>
+
+  {% if metrics %}
+
+    <!-- ── Best Model Metrics ─────────────────────────────────────────────── -->
+    <p class="section-title">Best Model — {{ metrics.best_model.model_name }}</p>
+    <div class="metrics-grid" style="margin-bottom:2rem;">
+      <div class="metric-card">
+        <div class="label">Accuracy</div>
+        <div class="value">{{ "%.1f"|format(metrics.best_model.accuracy * 100) }}%</div>
+        <div class="sub">overall correctness</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">F1 Score</div>
+        <div class="value">{{ "%.3f"|format(metrics.best_model.f1) }}</div>
+        <div class="sub">weighted average</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Precision</div>
+        <div class="value">{{ "%.3f"|format(metrics.best_model.precision) }}</div>
+        <div class="sub">weighted average</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Recall</div>
+        <div class="value">{{ "%.3f"|format(metrics.best_model.recall) }}</div>
+        <div class="sub">weighted average</div>
+      </div>
+    </div>
+
+    <!-- ── Model Comparison ───────────────────────────────────────────────── -->
+    <p class="section-title">Model Comparison</p>
+    <div class="card" style="margin-bottom:2rem; padding:0; overflow:hidden;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Accuracy</th>
+            <th>F1 Score</th>
+            <th>Precision</th>
+            <th>Recall</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, label in [('random_forest','Random Forest'), ('logistic_regression','Logistic Regression')] %}
+          {% set m = metrics[key] %}
+          {% set is_best = (m.model_name == metrics.best_model.model_name) %}
+          <tr>
+            <td class="{% if is_best %}winner{% endif %}">
+              {{ label }}{% if is_best %}<span class="best-tag">BEST</span>{% endif %}
+            </td>
+            <td>{{ "%.4f"|format(m.accuracy) }}</td>
+            <td>{{ "%.4f"|format(m.f1) }}</td>
+            <td>{{ "%.4f"|format(m.precision) }}</td>
+            <td>{{ "%.4f"|format(m.recall) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Clustering Results ─────────────────────────────────────────────── -->
+    <p class="section-title">Clustering — {{ metrics.clustering.algorithm }}</p>
+    <div class="card cluster-info" style="margin-bottom:2rem;">
+      <div class="cluster-stat">
+        <div class="cv">{{ metrics.clustering.n_clusters }}</div>
+        <div class="cl">Optimal Clusters</div>
+      </div>
+      <div class="cluster-stat">
+        <div class="cv">{{ "%.3f"|format(metrics.clustering.silhouette_score) }}</div>
+        <div class="cl">Silhouette Score</div>
+      </div>
+      {% for name, size in metrics.clustering.cluster_sizes.items() %}
+      <div class="cluster-stat">
+        <div class="cv">{{ size }}</div>
+        <div class="cl">{{ name }} size</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="card" style="margin-bottom:2rem; text-align:center; color:#4a5568;">
+      <p style="padding:2rem;">Metrics not yet available. Trigger the <strong>Air_Quality_Pipeline</strong> DAG and wait for it to complete.</p>
+    </div>
+  {% endif %}
+
+  <!-- ── Visualizations ────────────────────────────────────────────────── -->
+  <p class="section-title">Visualizations</p>
+  <div class="plots-grid plots-section">
+
+    {% if plots.confusion %}
+    <div class="plot-card">
+      <div class="plot-title">Confusion Matrix + ROC Curve</div>
+      <img src="/plot/confusion" alt="Confusion Matrix and ROC Curve" loading="lazy" />
+    </div>
+    {% else %}
+    <div class="plot-card">
+      <div class="plot-title">Confusion Matrix + ROC Curve</div>
+      <div class="no-plot">Plot not available yet.</div>
+    </div>
+    {% endif %}
+
+    {% if plots.dendrogram %}
+    <div class="plot-card">
+      <div class="plot-title">Dendrogram + PCA Cluster Projection</div>
+      <img src="/plot/dendrogram" alt="Dendrogram and cluster PCA" loading="lazy" />
+    </div>
+    {% else %}
+    <div class="plot-card">
+      <div class="plot-title">Dendrogram + PCA Cluster Projection</div>
+      <div class="no-plot">Plot not available yet.</div>
+    </div>
+    {% endif %}
+
+    {% if plots.importance %}
+    <div class="plot-card">
+      <div class="plot-title">Top Feature Importances (Random Forest)</div>
+      <img src="/plot/importance" alt="Feature Importances" loading="lazy" />
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- ── Links ────────────────────────────────────────────────────────── -->
+  <div class="card" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+    <a href="http://localhost:8082" target="_blank">Open Airflow UI</a>
+    <span style="color:#2d3748">|</span>
+    <a href="/metrics" target="_blank">Raw Metrics JSON</a>
+    <span style="color:#2d3748">|</span>
+    <a href="https://github.com/ahnaf015/MLOps_Lab_Works" target="_blank">GitHub Repo</a>
+    <span style="flex:1;"></span>
+    <span class="refresh-note">Auto-refreshes every 30 seconds</span>
+  </div>
+
+</main>
+
+<footer>
+  Air Quality Pipeline Dashboard &nbsp;|&nbsp; Mohammed Ahnaf Tajwar &nbsp;|&nbsp;
+  Built with Apache Airflow + Flask
+</footer>
+
+</body>
+</html>

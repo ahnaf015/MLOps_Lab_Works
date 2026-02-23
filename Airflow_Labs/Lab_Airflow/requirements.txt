@@ -1,0 +1,10 @@
+apache-airflow
+pandas
+scikit-learn
+matplotlib
+scipy
+flask
+requests
+pendulum
+numpy
+apache-airflow-providers-smtp

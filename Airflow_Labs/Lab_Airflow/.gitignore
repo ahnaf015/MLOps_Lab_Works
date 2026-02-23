@@ -1,0 +1,8 @@
+logs/
+working_data/*.pkl
+working_data/*.png
+working_data/*.json
+model/model.sav
+__pycache__/
+*.pyc
+.env
