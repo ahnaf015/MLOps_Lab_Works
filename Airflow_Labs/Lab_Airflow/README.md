@@ -75,7 +75,34 @@ This lab is a combination of concepts from previous labs — where Lab 1 focused
 cd Airflow_Labs/Lab_Airflow
 ```
 
-### 2. Run the setup script
+### 2. Create the `.env` file
+
+Before running anything, create a `.env` file in the `Lab_Airflow/` directory. This file is **not committed** to Git (it contains your credentials).
+
+```bash
+cp .env.example .env   # if an example exists, otherwise create it manually
+```
+
+Or create it directly with the following content:
+
+```env
+AIRFLOW_UID=50000
+
+# SMTP settings for email notifications (uses Gmail here)
+AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+AIRFLOW__SMTP__SMTP_STARTTLS=True
+AIRFLOW__SMTP__SMTP_SSL=False
+AIRFLOW__SMTP__SMTP_PORT=587
+AIRFLOW__SMTP__SMTP_USER=your.email@gmail.com
+AIRFLOW__SMTP__SMTP_PASSWORD=your_app_password
+AIRFLOW__SMTP__SMTP_MAIL_FROM=your.email@gmail.com
+```
+
+> **Gmail users:** You need an [App Password](https://support.google.com/accounts/answer/185833) — not your regular Gmail password. Enable 2FA on your Google account first, then generate an App Password under Security settings.
+
+> **No email?** The pipeline still works without SMTP — just remove the `EmailOperator` tasks or leave the SMTP fields blank. Only failure/retry notifications are affected.
+
+### 3. Run the setup script
 
 ```bash
 bash setup.sh
@@ -85,10 +112,11 @@ This will:
 - Create required directories (`logs/`, `working_data/`, `model/`)
 - Run `docker-compose up airflow-init` (DB migration + admin user creation)
 - Start all services in detached mode
+- Fix log directory permissions inside Docker
 
 > **Windows users:** Run `setup.sh` inside Git Bash or WSL.
 
-### 3. Wait for services to be healthy
+### 4. Wait for services to be healthy
 
 ```bash
 docker-compose ps
