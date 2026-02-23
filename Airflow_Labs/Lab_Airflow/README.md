@@ -263,18 +263,29 @@ docker-compose down -v
 
 ## Screenshots
 
-Screenshots are located in the `screenshots/` folder.
+### DAG Graph View
+![DAG Graph](screenshots/01_dag_graph.png)
 
-| File | Description |
-|---|---|
-| `01_dag_graph.png` | DAG graph view with TaskGroups |
-| `02_dag_running.png` | Tasks in progress |
-| `03_dag_success.png` | All tasks green |
-| `04_dashboard_main.png` | Flask dashboard full view |
-| `05_confusion_matrix.png` | Confusion matrix + ROC curve |
-| `06_dendrogram.png` | Clustering dendrogram + PCA scatter |
-| `07_feature_importance.png` | Feature importance bar chart |
-| `08_metrics_json.png` | Raw /metrics JSON endpoint |
+### Pipeline Running
+![Pipeline Running](screenshots/02_dag_running.png)
+
+### Pipeline Complete — All Tasks Green
+![Pipeline Success](screenshots/03_dag_success.png)
+
+### Flask Dashboard
+![Dashboard Main](screenshots/04_dashboard_main.png)
+
+### Confusion Matrix + ROC Curve
+![Confusion Matrix](screenshots/05_confusion_matrix.png)
+
+### Clustering Dendrogram + PCA Scatter
+![Dendrogram](screenshots/06_dendrogram.png)
+
+### Feature Importance
+![Feature Importance](screenshots/07_feature_importance.png)
+
+### Raw Metrics JSON (`/metrics`)
+![Metrics JSON](screenshots/08_metrics_json.png)
 
 ---
 
