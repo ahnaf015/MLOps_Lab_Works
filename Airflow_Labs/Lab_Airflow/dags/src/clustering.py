@@ -16,7 +16,7 @@ import os
 import pickle
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')            # non-interactive backend — required in Docker
+matplotlib.use('Agg')            
 import matplotlib.pyplot as plt
 
 from sklearn.cluster import AgglomerativeClustering
@@ -27,7 +27,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 WORKING_DATA = '/opt/airflow/working_data'
 
 
-# ─── Task 1: Train Agglomerative Clustering ──────────────────────────────────
+# Task 1: Train Agglomerative Clustering 
 
 def train_agglomerative(**context):
     """
@@ -75,7 +75,7 @@ def train_agglomerative(**context):
     return cluster_path
 
 
-# ─── Task 2: Generate Dendrogram + PCA Plot ──────────────────────────────────
+# Task 2: Generate Dendrogram + PCA Plot 
 
 def generate_cluster_plots(**context):
     """
@@ -96,7 +96,7 @@ def generate_cluster_plots(**context):
     best_k = data['best_k']
     sil = data['silhouette_score']
 
-    # ── Sample for dendrogram (scipy linkage is O(n²)) ───────────────────────
+    # Sample for dendrogram 
     sample_n = min(200, len(X))
     rng = np.random.default_rng(42)
     idx = rng.choice(len(X), size=sample_n, replace=False)
@@ -111,7 +111,7 @@ def generate_cluster_plots(**context):
         fontsize=14, fontweight='bold'
     )
 
-    # ── Left: Dendrogram ─────────────────────────────────────────────────────
+    # Left: Dendrogram 
     Z = linkage(X_sample, method='ward')
     dendrogram(
         Z, ax=axes[0],
@@ -125,7 +125,7 @@ def generate_cluster_plots(**context):
     axes[0].set_xlabel('Sample index / cluster size')
     axes[0].set_ylabel('Ward Distance')
 
-    # ── Right: PCA scatter ───────────────────────────────────────────────────
+    # Right: PCA scatter 
     pca = PCA(n_components=2, random_state=42)
     X_pca = pca.fit_transform(X_np)
 

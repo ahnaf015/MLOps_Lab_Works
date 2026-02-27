@@ -43,7 +43,7 @@ def start_flask_dashboard(**context):
         template_folder='/opt/airflow/dags/templates',
     )
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
+    
 
     def get_latest_run():
         """Return the most recent DagRun dict for Air_Quality_Pipeline, or None."""
@@ -71,7 +71,7 @@ def start_flask_dashboard(**context):
     def plot_exists(filename):
         return os.path.exists(os.path.join(WORKING_DATA, filename))
 
-    # ── Routes ────────────────────────────────────────────────────────────────
+    
 
     @app.route('/')
     def index():
@@ -141,12 +141,12 @@ def start_flask_dashboard(**context):
     def health():
         return jsonify({'status': 'ok', 'service': 'Air Quality Dashboard'})
 
-    # ── Start ─────────────────────────────────────────────────────────────────
+    # Start 
     print("[Dashboard] Flask server starting on 0.0.0.0:5555 ...")
     app.run(host='0.0.0.0', port=5050, debug=False, use_reloader=False)
 
 
-# ─── DAG ─────────────────────────────────────────────────────────────────────
+# DAG 
 
 with DAG(
     dag_id='Air_Quality_Dashboard',

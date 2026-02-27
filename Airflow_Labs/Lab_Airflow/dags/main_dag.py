@@ -6,31 +6,14 @@ DAG: Air_Quality_Pipeline
 End-to-end MLOps pipeline on the UCI Air Quality dataset.
 
 Advanced Airflow features demonstrated:
-  • TaskGroup          — logical grouping of related tasks
-  • BranchPythonOperator — dynamic branching based on model F1 score
-  • TriggerRule         — handle skipped branch tasks correctly
-  • SLA                 — per-task deadline with miss callback
-  • TriggerDagRunOperator — fire-and-forget launch of dashboard DAG
-  • EmailOperator       — failure/completion notifications
-  • owner_links         — clickable owner in Airflow UI
-  • tags                — filterable labels
-
-Pipeline DAG shape:
-  [data_group]
-    load_data → validate_data
-        ↓
-  [preprocessing_group]
-    clean_data → engineer_and_scale → split_data
-        ↓                    ↓
-  [clustering_group]   [classification_group]
-    train_agglomerative    train_rf ─┐
-    → generate_cluster_plots         ├→ branch_best_model → save_rf
-                           train_lr ─┘                   → save_lr
-        ↓                    ↓
-  [reporting_group]
-    generate_metrics → generate_plots
-        ↓
-  trigger_dashboard (TriggerDagRunOperator)
+  TaskGroup          — logical grouping of related tasks
+  BranchPythonOperator — dynamic branching based on model F1 score
+  TriggerRule         — handle skipped branch tasks correctly
+  SLA                 — per-task deadline with miss callback
+  TriggerDagRunOperator — fire-and-forget launch of dashboard DAG
+  EmailOperator       — failure/completion notifications
+  owner_links         — clickable owner in Airflow UI
+  tags                — filterable labels
 """
 
 import sys
@@ -58,13 +41,13 @@ from src.classification import (
 from src.evaluation import generate_metrics, generate_plots
 
 
-# ─── SLA miss callback ───────────────────────────────────────────────────────
+# SLA miss callback 
 
 def sla_miss_callback(dag, task_list, blocking_task_list, slas, blocking_tis):
     print(f"[SLA MISS] DAG={dag.dag_id}  tasks={task_list}")
 
 
-# ─── DAG defaults ────────────────────────────────────────────────────────────
+# DAG defaults 
 
 default_args = {
     'owner'           : 'Mohammed Ahnaf Tajwar',
@@ -77,7 +60,7 @@ default_args = {
     'sla'             : timedelta(minutes=30),
 }
 
-# ─── DAG definition ──────────────────────────────────────────────────────────
+# DAG definition 
 
 with DAG(
     dag_id='Air_Quality_Pipeline',
@@ -97,7 +80,7 @@ with DAG(
     tags=['ml', 'air-quality', 'clustering', 'classification', 'lab'],
 ) as dag:
 
-    # ── Startup banner ────────────────────────────────────────────────────────
+    # Startup banner 
     startup_banner = BashOperator(
         task_id='startup_banner',
         bash_command=(
@@ -109,7 +92,7 @@ with DAG(
         ),
     )
 
-    # ── Group 1: Data Ingestion ───────────────────────────────────────────────
+    # Group 1: Data Ingestion 
     with TaskGroup('data_group', tooltip='Load and validate raw data') as data_group:
 
         t_load = PythonOperator(
@@ -124,7 +107,7 @@ with DAG(
 
         t_load >> t_validate
 
-    # ── Group 2: Preprocessing ────────────────────────────────────────────────
+    # Group 2: Preprocessing 
     with TaskGroup('preprocessing_group', tooltip='Clean, scale, split') as preprocess_group:
 
         t_clean = PythonOperator(
@@ -144,7 +127,7 @@ with DAG(
 
         t_clean >> t_engineer >> t_split
 
-    # ── Group 3: Clustering ───────────────────────────────────────────────────
+    # Group 3: Clustering 
     with TaskGroup('clustering_group', tooltip='Agglomerative clustering + plots') as cluster_group:
 
         t_cluster = PythonOperator(
@@ -159,7 +142,7 @@ with DAG(
 
         t_cluster >> t_dendro
 
-    # ── Group 4: Classification ───────────────────────────────────────────────
+    # Group 4: Classification
     with TaskGroup('classification_group', tooltip='RF vs LR, branch on best F1') as classify_group:
 
         t_rf = PythonOperator(
@@ -189,7 +172,7 @@ with DAG(
 
         [t_rf, t_lr] >> t_branch >> [t_save_rf, t_save_lr]
 
-    # ── Group 5: Reporting ────────────────────────────────────────────────────
+    # Group 5: Reporting 
     with TaskGroup('reporting_group', tooltip='Metrics JSON + evaluation plots') as report_group:
 
         t_metrics = PythonOperator(
@@ -207,7 +190,7 @@ with DAG(
 
         t_metrics >> t_plots
 
-    # ── Trigger Dashboard DAG ─────────────────────────────────────────────────
+    # Trigger Dashboard DAG
     trigger_dashboard = TriggerDagRunOperator(
         task_id='trigger_dashboard',
         trigger_dag_id='Air_Quality_Dashboard',
@@ -215,7 +198,7 @@ with DAG(
         trigger_rule=TriggerRule.ALL_DONE,
     )
 
-    # ── Pipeline wiring ───────────────────────────────────────────────────────
+    # Pipeline wiring
     startup_banner >> data_group >> preprocess_group
     preprocess_group >> [cluster_group, classify_group]
     [cluster_group, classify_group] >> report_group

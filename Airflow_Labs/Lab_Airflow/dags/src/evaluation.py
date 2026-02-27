@@ -27,7 +27,7 @@ from sklearn.metrics import (
 WORKING_DATA = '/opt/airflow/working_data'
 
 
-# ─── Task 1: Generate Metrics JSON ───────────────────────────────────────────
+# Task 1: Generate Metrics JSON 
 
 def generate_metrics(**context):
     """
@@ -64,7 +64,7 @@ def generate_metrics(**context):
     return metrics_path
 
 
-# ─── Task 2: Generate Evaluation Plots ───────────────────────────────────────
+# Task 2: Generate Evaluation Plots 
 
 def generate_plots(**context):
     """
@@ -86,7 +86,7 @@ def generate_plots(**context):
     X_test     = split_data['X_test']
     feat_names = split_data['feature_names']
 
-    # ── Figure 1: Confusion Matrix + ROC ─────────────────────────────────────
+    # Figure 1: Confusion Matrix + ROC 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
     fig.suptitle(f'Model Evaluation — {model_name}', fontsize=14, fontweight='bold')
 
@@ -123,7 +123,7 @@ def generate_plots(**context):
     plt.close()
     print(f"Evaluation plots saved → {eval_path}")
 
-    # ── Figure 2: Feature Importance (RF only) ────────────────────────────────
+    # Figure 2: Feature Importance (RF only) 
     rf_model = rf_data['model']
     if hasattr(rf_model, 'feature_importances_'):
         importances = rf_model.feature_importances_

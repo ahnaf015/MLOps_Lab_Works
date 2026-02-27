@@ -25,7 +25,7 @@ echo ""
 echo "[3/3] Starting all Airflow services..."
 docker-compose up -d
 
-# Fix log directory permissions from inside Docker (avoids Windows permission issues)
+
 # Runs as root inside the worker container so it can chmod Docker-owned files
 echo "      Fixing log directory permissions..."
 docker-compose exec -u root -T airflow-worker chmod -R 777 /opt/airflow/logs 2>/dev/null || true

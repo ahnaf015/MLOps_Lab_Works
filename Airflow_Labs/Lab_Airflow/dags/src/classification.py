@@ -23,8 +23,6 @@ WORKING_DATA = '/opt/airflow/working_data'
 MODEL_DIR    = '/opt/airflow/model'
 
 
-# ─── Helper ──────────────────────────────────────────────────────────────────
-
 def _load_splits(split_path):
     with open(split_path, 'rb') as f:
         return pickle.load(f)
@@ -40,7 +38,7 @@ def _compute_metrics(name, y_test, y_pred):
     }
 
 
-# ─── Task 1: Random Forest ────────────────────────────────────────────────────
+# Task 1: Random Forest 
 
 def train_random_forest(**context):
     """Train a Random Forest (100 trees) and persist model + metrics."""
@@ -68,7 +66,7 @@ def train_random_forest(**context):
     return rf_path
 
 
-# ─── Task 2: Logistic Regression ─────────────────────────────────────────────
+# Task 2: Logistic Regression 
 
 def train_logistic_regression(**context):
     """Train a Logistic Regression (max_iter=1000) and persist model + metrics."""
@@ -96,7 +94,7 @@ def train_logistic_regression(**context):
     return lr_path
 
 
-# ─── Task 3: Branch on Best F1 ───────────────────────────────────────────────
+# Task 3: Branch on Best F1 
 
 def branch_best_model(**context):
     """
@@ -123,7 +121,7 @@ def branch_best_model(**context):
         return 'classification_group.save_logistic_regression'
 
 
-# ─── Task 4a: Save Random Forest ─────────────────────────────────────────────
+# Task 4a: Save Random Forest 
 
 def save_random_forest(**context):
     """Copy RF results to best_model.pkl and model/model.sav."""
@@ -145,7 +143,7 @@ def save_random_forest(**context):
     return best_path
 
 
-# ─── Task 4b: Save Logistic Regression ───────────────────────────────────────
+# Task 4b: Save Logistic Regression 
 
 def save_logistic_regression(**context):
     """Copy LR results to best_model.pkl and model/model.sav."""

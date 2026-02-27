@@ -27,7 +27,7 @@ WORKING_DATA = '/opt/airflow/working_data'
 UCI_URL = 'https://archive.ics.uci.edu/static/public/360/air+quality.zip'
 
 
-# ─── Task 1: Load Data ────────────────────────────────────────────────────────
+# Task 1: Load Data 
 
 def load_data(**context):
     """
@@ -54,7 +54,7 @@ def load_data(**context):
         df.to_csv(cache_csv, index=False, sep=';', decimal=',')
         print(f"Dataset cached → {cache_csv}")
 
-    # Drop fully empty trailing rows (last 2 rows in this dataset are blank)
+    # Drop fully empty trailing rows 
     df = df.dropna(how='all')
 
     print(f"Raw shape : {df.shape}")
@@ -68,7 +68,7 @@ def load_data(**context):
     return raw_path
 
 
-# ─── Task 2: Validate Data ───────────────────────────────────────────────────
+# Task 2: Validate Data 
 
 def validate_data(**context):
     """Basic sanity checks on the loaded dataset."""
@@ -88,7 +88,7 @@ def validate_data(**context):
     return raw_path
 
 
-# ─── Task 3: Clean Data ───────────────────────────────────────────────────────
+# Task 3: Clean Data 
 
 def clean_data(**context):
     """
@@ -130,7 +130,7 @@ def clean_data(**context):
     return clean_path
 
 
-# ─── Task 4: Feature Engineering + Scaling ───────────────────────────────────
+# Task 4: Feature Engineering + Scaling 
 
 def engineer_and_scale(**context):
     """
@@ -143,13 +143,12 @@ def engineer_and_scale(**context):
     with open(clean_path, 'rb') as f:
         df = pickle.load(f)
 
-    # Find the CO ground-truth column (CO(GT) or similar)
+    
     co_candidates = [c for c in df.columns if 'CO' in c.upper() and 'GT' in c.upper()]
     target_col = co_candidates[0] if co_candidates else df.columns[0]
 
     print(f"Target column : {target_col}")
 
-    # Binary target: above median CO level = hazardous (1)
     threshold = df[target_col].median()
     y = (df[target_col] > threshold).astype(int)
     X = df.drop(columns=[target_col])
@@ -178,7 +177,7 @@ def engineer_and_scale(**context):
     return feature_path
 
 
-# ─── Task 5: Train / Test Split ──────────────────────────────────────────────
+# Task 5: Train / Test Split 
 
 def split_data(**context):
     """80/20 stratified train-test split."""
