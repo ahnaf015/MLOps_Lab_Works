@@ -1,0 +1,38 @@
+version: "3.8"
+
+# ============================================================
+# Docker Compose — Heart Disease Risk Predictor
+# ============================================================
+# Two services communicate via a named Docker volume:
+#   model-training  →  trains model, writes to /exchange
+#   serving         →  reads from /exchange, exposes Flask API
+# ============================================================
+
+services:
+
+  # ── Service 1: Model Training ──────────────────────────────
+  model-training:
+    build:
+      context: .
+      target: trainer          # Uses Stage 1 of the multi-stage Dockerfile
+    volumes:
+      - model_exchange:/exchange   # Writes trained model here
+    restart: "no"                  # Run once and exit
+
+  # ── Service 2: Flask Prediction API ────────────────────────
+  serving:
+    build:
+      context: .
+      target: server           # Uses Stage 2 of the multi-stage Dockerfile
+    ports:
+      - "5000:80"              # Access dashboard at http://localhost:5000
+    volumes:
+      - model_exchange:/exchange   # Reads trained model from here
+    depends_on:
+      model-training:
+        condition: service_completed_successfully   # Wait for training to finish
+
+# ── Shared Named Volume ────────────────────────────────────
+volumes:
+  model_exchange:
+    driver: local
