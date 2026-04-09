@@ -326,7 +326,7 @@ python phase2_train.py --model random_forest
 ![Feature Importance](screenshots/wandb-feature-importance.png)
 
 ### Data Artifacts
-![Artifacts](screenshots/wandb-artifacts.png) 
+![Artifacts](screenshots/wandb-artifact.png) 
 
 ### W&B Alerts
 ![Alerts](screenshots/wandb-alerts.png)
