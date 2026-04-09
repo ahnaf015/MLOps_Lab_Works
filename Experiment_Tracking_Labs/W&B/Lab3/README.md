@@ -1,4 +1,4 @@
-# Lab 3: Mushroom Safety Classifier — End-to-End ML Pipeline with W&B
+# Mushroom Safety Classifier — End-to-End ML Pipeline with W&B
 
 An advanced experiment tracking lab that builds a complete ML pipeline for classifying mushrooms as **edible** or **poisonous**, with full [Weights & Biases](https://wandb.ai) integration, a FastAPI backend, and a Gradio frontend.
 
@@ -310,34 +310,32 @@ python phase2_train.py --model random_forest
 
 ## W&B Dashboard Screenshots
 
-> Add your own screenshots here after running the pipeline.
-
 ### Project Overview
-<!-- ![W&B Project Overview](screenshots/wandb-project.png) -->
+!-- ![W&B Project Overview](screenshots/wandb-project.png) -->
 *The W&B project dashboard showing all runs, sweeps, and artifacts.*
 
 ### Sweep Results
-<!-- ![W&B Sweep](screenshots/wandb-sweep.png) -->
+!-- ![W&B Sweep](screenshots/wandb-sweep.png) -->
 *Bayesian sweep comparing XGBoost, LightGBM, and Random Forest across hyperparameters.*
 
 ### EDA Tables
-<!-- ![W&B Tables](screenshots/wandb-tables.png) -->
+!-- ![W&B Tables](screenshots/wandb-tables.png) -->
 *Interactive data table with all 8,124 mushroom samples.*
 
 ### ROC Curve
-<!-- ![ROC Curve](screenshots/wandb-roc.png) -->
+!-- ![ROC Curve](screenshots/wandb-roc.png) -->
 *ROC curve showing AUC score.*
 
 ### Feature Importance
-<!-- ![Feature Importance](screenshots/wandb-feature-importance.png) -->
+!-- ![Feature Importance](screenshots/wandb-feature-importance.png) -->
 *Feature importance ranking — odor is the most discriminative feature.*
 
 ### Data Artifacts
-<!-- ![Artifacts](screenshots/wandb-artifacts.png) -->
+!-- ![Artifacts](screenshots/wandb-artifacts.png) -->
 *Versioned dataset and model artifacts with full lineage.*
 
 ### W&B Alerts
-<!-- ![Alerts](screenshots/wandb-alerts.png) -->
+!-- ![Alerts](screenshots/wandb-alerts.png) -->
 *Automated alerts for high-performing models and production registration.*
 
 ---
@@ -347,19 +345,19 @@ python phase2_train.py --model random_forest
 > Add your own screenshots here after running the servers.
 
 ### Gradio Interface
-<!-- ![Gradio UI](screenshots/gradio-ui.png) -->
+!-- ![Gradio UI](screenshots/gradio-ui.png) -->
 *Main interface with mushroom feature dropdowns and model selector.*
 
 ### Edible Prediction
-<!-- ![Edible Result](screenshots/gradio-edible.png) -->
+!-- ![Edible Result](screenshots/gradio-edible.png) -->
 *Green "EDIBLE" verdict with confidence score and top features.*
 
 ### Poisonous Prediction
-<!-- ![Poisonous Result](screenshots/gradio-poisonous.png) -->
+!-- ![Poisonous Result](screenshots/gradio-poisonous.png) -->
 *Red "POISONOUS" verdict with high danger risk level.*
 
 ### FastAPI Swagger Docs
-<!-- ![FastAPI Docs](screenshots/fastapi-docs.png) -->
+!-- ![FastAPI Docs](screenshots/fastapi-docs.png) -->
 *Auto-generated API documentation at /docs.*
 
 ---
