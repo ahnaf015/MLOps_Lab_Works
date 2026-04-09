@@ -1,0 +1,36 @@
+# W&B local run data
+wandb/
+
+# Trained model artifacts
+artifacts/
+
+# Dataset (download from Kaggle)
+data/mushrooms.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv/
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
